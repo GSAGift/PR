@@ -1,12 +1,5 @@
 import numpy as np
 
-# def get_actual_pos_theta(data):
-#     x, y = data.qpos[0], data.qpos[1]
-#     w, xq, yq, zq = data.qpos[3:7]
-#     theta = np.arctan2(2 * (w * xq + yq * zq), 1 - 2 * (xq**2 + yq**2))
-
-#     return x, y, theta
-
 def get_actual_pos_theta_by_id(data, car_id):
     # Получаем позицию тела
     x, y, _ = data.xpos[car_id]
@@ -19,24 +12,14 @@ def get_actual_pos_theta_by_id(data, car_id):
 
     return x, y, theta
 
-def get_target_pos_theta(trajectory, x, y):
-    target_point = trajectory[0]
-
+def get_target_pos_theta(target_point, x, y):
     dx = target_point[0] - x
     dy = target_point[1] - y
+
     dist_to_target = np.hypot(dx, dy)
-
-    # 0.1 for deep search and 0.01 for A-star
-    if dist_to_target < 0.1:  # Если близко к точке — переходим к следующей
-        trajectory.pop(0)
-        if not trajectory:
-            return (0, 0), trajectory
-        target_point = trajectory[0]
-        dx = target_point[0] - x
-        dy = target_point[1] - y
-        dist_to_target = np.hypot(dx, dy)
-
     angle_target = np.arctan2(dy, dx)
+
+    # print("x, y, target_point[0], target_point[1], dist_to_target, angle_target", x, y, target_point[0], target_point[1], dist_to_target, angle_target)
 
     return dist_to_target, angle_target
 
