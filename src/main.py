@@ -2,7 +2,7 @@ import mujoco
 from mujoco import viewer
 import numpy as np
 
-model_pass = "/Users/polinakuranova/uni/ptur/RobMPC/model_2/scene_2.xml"
+model_pass = "/Users/polinakuranova/uni/robot_programming_course/course_work_2/PR/model/scene.xml"
 
 def control_func(model, data):
     pass
