@@ -1,27 +1,62 @@
 import mujoco
 from mujoco import viewer
-import os
+import numpy as np
+from camera import get_image_from_camera
 
-# --- Путь к основной сцене ---
-MODEL_FILE = os.path.join(os.path.dirname(__file__), '..', 'model', 'scene.xml')
+from first_car_trajectory.generate_first_car_trajectory import infinite_trajectory_generator, TargetPoint
+from PD_regulator.PD_regulator import PDRegulator, get_actual_pos_theta_by_id, get_target_pos_theta
 
+model_pass="/home/amir/Studying/PR/model/scene.xml"
 
 def control_func(model, data):
-    """
-    Основная функция управления. Задает постоянную скорость
-    и угол поворота для движения по кругу.
-    """
-    pass
+    # First car
+    target_point_list = (target_point.x, target_point.y)
+
+    body_name="car1"
+    body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name)
+    
+    # print(body_id)
+    
+    # get_image_from_camera(data, renderer)
+    
+    if body_id == -1:
+        raise ValueError(f"Car '{body_name}' not found.")
+    else:
+        x, y, theta = get_actual_pos_theta_by_id(data, body_id)
+
+        # Получаем требуемые положение и ориентацию
+        dist_to_target, angle_target = get_target_pos_theta(target_point_list, x, y)
+        # print(dist_to_target, angle_target)
+        if dist_to_target < 0.01:
+            target_point_list = target_point.next()
+
+        data.ctrl = controller.pd_reg(dist_to_target, angle_target, np.hypot(x, y), theta, model.opt.timestep)
+
+
+
+    # Other car
+    # pass
+
 
 
 if __name__ == '__main__':
-    model = mujoco.MjModel.from_xml_path(MODEL_FILE)
-    data = mujoco.MjData(model)
+    try:
+        gen = infinite_trajectory_generator(a=1, b=0.5, center=(0, 0), angular_speed=-0.1)
+        target_point = TargetPoint(gen)
 
-    mujoco.set_mjcb_control(control_func)
+        controller = PDRegulator(Kp_lin = 1, Kd_lin = 1, Kp_ang = -0.01, Kd_ang = -0.3)
 
-    # Запускаем симуляцию
-    with viewer.launch_passive(model, data) as viewer:
-        while viewer.is_running():
-            mujoco.mj_step(model, data)
-            viewer.sync()
+        # Загрузка модели
+        model = mujoco.MjModel.from_xml_path(model_pass)
+        data = mujoco.MjData(model)
+        renderer = mujoco.Renderer(model, 320, 240) 
+
+        mujoco.set_mjcb_control(control_func)
+
+        # Запуск интерактивного окна
+        with viewer.launch(model, data) as viewer:
+            while viewer.is_running():
+                mujoco.mj_step(model, data)
+                viewer.sync()
+    except Exception as e:
+        print(f"[Ошибка] {e}")

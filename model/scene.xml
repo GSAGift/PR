@@ -31,7 +31,7 @@
     <geom name="floor" size="3 3 .01" type="plane" material="groundplane"/>
 
     <!-- ================== CAR 1 ================== -->
-    <body name="car1_car" pos="-1.5 1.0 .03">
+    <body name="car1" pos="1.0 0.0 .03">
       <camera name="car1_front_cam" mode="fixed" pos="0.1 0 0.1" euler="0 -50 270" fovy="120"/>
       <freejoint/>
       <light name="car1_top_light" pos="0 0 2" mode="trackcom" diffuse=".4 .4 .4"/>
