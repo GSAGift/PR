@@ -6,11 +6,11 @@
     <texture name="qr" type="2d" builtin="checker" width="32" height="32" rgb1="0 0 0" rgb2="1 1 1"/>
     <material name="qr_material" texture="qr" texrepeat="1 1" texuniform="true" rgba="1 1 1 1"/>
     <mesh name="chasis" scale=".01 .006 .0015"
-      vertex=" 9   2   0
+      vertex="9   2   0
               -10  10  10
-               9  -2   0
-               10  3  -10
-               10 -3  -10
+              9  -2   0
+              10  3  -10
+              10 -3  -10
               -8   10 -10
               -10 -10  10
               -8  -10 -10
@@ -97,17 +97,13 @@
     <rangefinder name="range_front" site="sensor_front"/>
     <rangefinder name="range_left" site="sensor_left"/>
     <rangefinder name="range_right" site="sensor_right"/>
-
+    
     <!-- Сенсоры контакта (тач-сенсоры) -->
     <touch name="touch_front" site="sensor_front"/>
     <touch name="touch_left" site="sensor_left"/>
     <touch name="touch_right" site="sensor_right"/>
-
   
   
-   </sensor>
-
-
-    
+  </sensor>
   <!-- </sensor> -->
 </mujoco>
