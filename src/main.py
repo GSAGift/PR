@@ -17,7 +17,7 @@ def control_func(model, data):
     
     # print(body_id)
     
-    # get_image_from_camera(data, renderer)
+    get_image_from_camera(data, renderer)
     
     if body_id == -1:
         raise ValueError(f"Car '{body_name}' not found.")
@@ -26,13 +26,15 @@ def control_func(model, data):
 
         # Получаем требуемые положение и ориентацию
         dist_to_target, angle_target = get_target_pos_theta(target_point_list, x, y)
-        # print(dist_to_target, angle_target)
+        print(dist_to_target, angle_target)
         if dist_to_target < 0.01:
             target_point_list = target_point.next()
 
-        data.ctrl = controller.pd_reg(dist_to_target, angle_target, np.hypot(x, y), theta, model.opt.timestep)
+        f1, a1 = controller.pd_reg(dist_to_target, angle_target, np.hypot(x, y), theta, 0.1)
+        
+        # print(model.opt.timestep)
 
-
+        data.ctrl = [0, 0, 0, 0]
 
     # Other car
     # pass
