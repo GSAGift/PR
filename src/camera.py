@@ -7,9 +7,9 @@ import cv2 as cv
 
 from qr_detect_and_scan import QR_handler
 
-def get_image_from_camera(data, renderer):
+def get_image_from_camera(data, renderer, camera):
     # Обновление и рендеринг камеры
-    renderer.update_scene(data, camera="car1_front_cam")
+    renderer.update_scene(data, camera=camera)
     img = renderer.render()
 
     img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
