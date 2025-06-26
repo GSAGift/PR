@@ -104,22 +104,5 @@ class QR_handler():
             for x in range(len(img[0]) - 1, len(img[0]) - 2 - 2 * bit_size, -bit_size):
                 packages_number += self._check_bit(img, y, x)
 
-        
 
-
-# img = cv.imread('/home/amir/Studying/PR/test_5.png', cv.IMREAD_GRAYSCALE)
-# gog = cv.imshow('test1' , img)
-# handler = QR_handler()
-# img = handler.get_qr_img(img)
-# img_data = decode(img)
-
-# if img_data:
-#     qr_data = img_data[0].data.decode('utf-8')  # или 'utf-8', если текст
-#     print(f'Считанное значение QR: {qr_data}')
-# else:
-#     qr_text = None
-#     print('QR-код не найден')
-
-# cv.imshow('test', img)
-# cv.waitKey(0)
 

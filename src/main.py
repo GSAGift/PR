@@ -1,7 +1,7 @@
 import mujoco
 from mujoco import viewer
 import numpy as np
-from camera import get_image_from_camera
+from camera import get_image_from_camera, find_displacement
 
 from first_car_trajectory.generate_first_car_trajectory import infinite_trajectory_generator, TargetPoint
 from PD_regulator.PD_regulator import PDRegulator, get_actual_pos_theta_by_id, get_target_pos_theta
@@ -17,7 +17,13 @@ def control_func(model, data):
     
     # print(body_id)
     
-    get_image_from_camera(data, renderer)
+    qr_info = get_image_from_camera(data, renderer)
+    
+    if (qr_info):
+        d, x_c = find_displacement(qr_info)
+    else:
+        d, x_c = 1, 0
+        
     
     if body_id == -1:
         raise ValueError(f"Car '{body_name}' not found.")

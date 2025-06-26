@@ -20,11 +20,11 @@
     <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
 
     <!-- Ассеты для Car 1 -->
-    <texture name="car1_qr" type="2d" file="../qr_1.png"/>
+    <texture name="car1_qr" type="2d" file="qr_codes/qr_1.png"/>
     <material name="car1_qr_material" texture="car1_qr" />
     <mesh name="car1_chasis" scale=".01 .006 .0015" vertex=" 9 2 0 -10 10 10 9 -2 0 10 3 -10 10 -3 -10 -8 10 -10 -10 -10 10 -8 -10 -10 -5 0 20"/>
 
-    <texture name="car2_qr" type="2d" file="../qr_2.png"/>
+    <texture name="car2_qr" type="2d" file="qr_codes/qr_2.png"/>
     <material name="car2_qr_material" texture="car2_qr" />
     <mesh name="car2_chasis" scale=".01 .006 .0015" vertex=" 9 2 0 -10 10 10 9 -2 0 10 3 -10 10 -3 -10 -8 10 -10 -10 -10 10 -8 -10 -10 -5 0 20"/>
   </asset>
@@ -35,8 +35,8 @@
     <geom name="floor" size="3 3 .01" type="plane" material="groundplane"/>
 
     <!-- ================== CAR 1 ================== -->
-    <body name="car1" pos="1.05 0.0 .03">
-      <camera name="car1_front_cam" mode="fixed" pos="0.1 0 0.0" euler="0 -90 270" fovy="120"/>
+    <body name="car1" pos="0.5 0.0 .03">
+      <camera name="car1_front_cam" mode="fixed" pos="0.1 0 0.0" euler="0 -90 270" fovy="45"/>
       <freejoint/>
       <light name="car1_top_light" pos="0 0 2" mode="trackcom" diffuse=".4 .4 .4"/>
       <geom name="car1_chasis" type="mesh" mesh="car1_chasis"/>
