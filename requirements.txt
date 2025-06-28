@@ -1,0 +1,6 @@
+mujoco
+numpy
+qrcode[pil]
+lxml
+opencv-python
+pyzbar
