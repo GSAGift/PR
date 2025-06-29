@@ -15,9 +15,13 @@ car2_positions = []
 desired_positions = []
 
 leader_positions_history = []
+tracking_mode = "history"
+no_qr_counter = 0
+max_no_qr_frames = 10  # например, 10 шагов без QR — меняем режим
+previous_tracking_mode = tracking_mode
 
 def control_func(model, data):
-    global car1_positions, car2_positions, desired_positions
+    global car1_positions, car2_positions, desired_positions, tracking_mode, no_qr_counter, max_no_qr_frames, previous_tracking_mode
 
     # ------ First car ------
     target_point_list = (target_point.x, target_point.y)
@@ -62,25 +66,37 @@ def control_func(model, data):
         qr_info = get_image_from_camera(data, renderer, camera="car2_front_cam")
 
         if qr_info:
+            no_qr_counter = 0
+            tracking_mode = "qr"
             # Дистанция и Координата смещения центра QR-кода от центра изображения по оси x
             d, x_c = find_displacement(qr_info)
             f2, a2 = controller2.pd_reg(d, x_c, target_distance, 0, model.opt.timestep)
             # print(f2, a2)
         else:
-            if leader_positions_history:
-                # Берём предыдущую точку из истории (например, 10 шагов назад)
-                history_index = min(1, len(leader_positions_history) - 1)
-                prev_leader_pos = leader_positions_history[-history_index]
-                print(prev_leader_pos)
-                target_x, target_y = prev_leader_pos
-                dist_to_target = np.hypot(x2 - target_x, y2 - target_y)
-                angle_to_target = np.arctan2(target_y - y2, target_x - x2) - theta2
-                f2, a2 = controller2.pd_reg(dist_to_target, angle_to_target, target_distance, 0, model.opt.timestep)
-            else:
-                # Если нет истории, просто остановись или едь вперёд
-                f2, a2 = 0.0, 0.0
-            # f2, a2 = controller2.pd_reg(np.hypot(x1, y1), theta1, target_distance, 0, model.opt.timestep)
+            no_qr_counter += 1
+            if no_qr_counter > max_no_qr_frames:
+                tracking_mode = "history"
 
+        if tracking_mode == "history":
+            if leader_positions_history:
+                history_index = min(10, len(leader_positions_history) - 1)
+                target_x, target_y = leader_positions_history[-history_index]
+                dx = target_x - x2
+                dy = target_y - y2
+                dist_to_target = np.hypot(dx, dy)
+                angle_to_leader = np.arctan2(dy, dx)
+                angle_error = angle_to_leader - theta2
+                angle_error = (angle_error + np.pi) % (2 * np.pi) - np.pi  # нормализация
+
+                # Передаём в регулятор
+                f2, a2 = controller2.pd_reg(dist_to_target, angle_error, target_distance, 0, model.opt.timestep)
+
+                # Сброс ошибок регулятора при смене режима
+                if previous_tracking_mode != tracking_mode:
+                    controller2.prev_dist_err = 0
+                    controller2.prev_angle_err = 0
+            else:
+                f2, a2 = 0.0, 0.0
     # ------ set control ------
     data.ctrl = [f1, a1, f2, a2]
 
@@ -92,10 +108,10 @@ if __name__ == '__main__':
 
         target_point = TargetPoint(gen)
         target_points.append(target_point)
-        target_distance = 0.5
+        target_distance = 0.1
 
         controller1 = PDRegulator(Kp_lin = -0.5, Kd_lin = 0.1, Kp_ang = 1, Kd_ang = 0.5)
-        controller2 = PDRegulator(Kp_lin = -0.8, Kd_lin = 0.1, Kp_ang = -0.5, Kd_ang = 0.1)
+        controller2 = PDRegulator(Kp_lin = -0.8, Kd_lin = 0.1, Kp_ang = -0.4, Kd_ang = -0.001)
 
         # Загрузка модели
         model = mujoco.MjModel.from_xml_path(model_pass)
