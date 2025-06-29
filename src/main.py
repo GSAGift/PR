@@ -7,7 +7,7 @@ from first_car_trajectory.generate_first_car_trajectory import infinite_trajecto
 from PD_regulator.PD_regulator import PDRegulator
 from car_controllers.car_controllers import car1_conroller, car2_conroller
 
-model_pass = "/Users/polinakuranova/uni/robot_programming_course/course_work_2/PR/model/scene.xml"
+model_pass = "../model/scene.xml"
 
 # --- Для записи траекторий ---
 car1_positions = []
