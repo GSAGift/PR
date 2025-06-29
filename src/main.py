@@ -2,11 +2,10 @@ import mujoco
 from mujoco import viewer
 import numpy as np
 import matplotlib.pyplot as plt
-
 from camera import get_image_from_camera, find_displacement
-from PD_regulator.PD_regulator import get_actual_pos_theta_by_id, get_target_pos_theta
+
 from first_car_trajectory.generate_first_car_trajectory import infinite_trajectory_generator, TargetPoint
-from PD_regulator.PD_regulator import PDRegulator
+from PD_regulator.PD_regulator import PDRegulator, get_actual_pos_theta_by_id, get_target_pos_theta
 
 model_pass = "../model/scene.xml"
 
@@ -24,7 +23,7 @@ previous_tracking_mode = tracking_mode
 def control_func(model, data):
     global car1_positions, car2_positions, desired_positions, tracking_mode, no_qr_counter, max_no_qr_frames, previous_tracking_mode
 
-    # ---- first car ----
+    # ------ First car ------
     target_point_list = (target_point.x, target_point.y)
     desired_positions.append(target_point_list)  # Сохраняем желаемую точку
 
@@ -51,8 +50,8 @@ def control_func(model, data):
 
             target_point_list = target_point.next()
         f1, a1 = controller1.pd_reg(np.hypot(x1, y1), theta1, dist_to_target, angle_target, model.opt.timestep)
- 
-    # ---- second car ----
+
+    # ------ Second car ------
     body2_name = "car2"
     body2_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body2_name)
 
@@ -66,12 +65,13 @@ def control_func(model, data):
 
         qr_info = get_image_from_camera(data, renderer, camera="car2_front_cam")
 
-        if qr_info and 1 == qr_info[0].data.decode('utf-8'):
+        if qr_info:
             no_qr_counter = 0
             tracking_mode = "qr"
             # Дистанция и Координата смещения центра QR-кода от центра изображения по оси x
             d, x_c = find_displacement(qr_info)
             f2, a2 = controller2.pd_reg(d, x_c, target_distance, 0, model.opt.timestep)
+            # print(f2, a2)
         else:
             no_qr_counter += 1
             if no_qr_counter > max_no_qr_frames:
@@ -97,8 +97,7 @@ def control_func(model, data):
                     controller2.prev_angle_err = 0
             else:
                 f2, a2 = 0.0, 0.0
-
-    # ---- set control ----
+    # ------ set control ------
     data.ctrl = [f1, a1, f2, a2]
 
 
@@ -130,6 +129,7 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"[Ошибка] {e}")
     finally:
+
         if car1_positions or car2_positions or desired_positions:
             plt.figure(figsize=(10, 8))
 
@@ -154,6 +154,10 @@ if __name__ == '__main__':
             preview_desired = [next(debug_gen) for _ in range(num_preview_points)]
             px, py = zip(*preview_desired)
             plt.plot(px, py, label='Full Desired Ellipse', color='purple', linestyle=':', linewidth=2)
+            """for i in range(len(px)):
+                print(f' Target: {target_points[i].x}, {target_points[i].y}')
+                print(f' Elips: {px[i]}, {py[i]}')"""
+
 
             plt.title("Trajectories of Cars and Desired Path")
             plt.xlabel("X Position")
