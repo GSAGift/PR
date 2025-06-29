@@ -61,7 +61,7 @@
       <site name="car1_sensor_right" pos="0 -0.07 0.02" size="0.005" rgba="0 0 1 1"/>
     </body>
     <!-- ================== CAR 2 ================== -->
-    <body name="car2" pos="0.5 0.0 .03">
+    <body name="car2" pos="0.8775825618903728  0.25 .03">
       <camera name="car2_front_cam" mode="fixed" pos="0.1 0 0.0" euler="0 -90 270" fovy="45"/>
       <freejoint/>
       <light name="car2_top_light" pos="0 0 2" mode="trackcom" diffuse=".4 .4 .4"/>
