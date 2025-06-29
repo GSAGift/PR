@@ -37,12 +37,13 @@ def infinite_trajectory_generator(a=1.0, b=1.0, center=(0.0, 0.0), angular_speed
     while True:
         x = cx + a * np.cos(theta)
         y = cy + b * np.sin(theta)
-        print("actual x, y, theta", x, y, theta)
+        # print("actual x, y, theta", x, y, theta)
         yield x, y
         theta += angular_speed
         # Ограничиваем theta, чтобы избежать больших чисел
         if theta > 2 * np.pi:
             theta -= 2 * np.pi
+
 
 class TargetPoint:
     def __init__(self, gen):

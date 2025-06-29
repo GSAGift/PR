@@ -13,7 +13,7 @@ def get_image_from_camera(data, renderer, camera):
     img = renderer.render()
 
     img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    print(img_bgr.shape)
+    # print(img_bgr.shape)
     qr_info = decode(img_bgr)
     
     if qr_info:
@@ -21,7 +21,7 @@ def get_image_from_camera(data, renderer, camera):
         print(f'Считанное значение QR: {qr_data}')
     else:
         qr_text = None
-        print('QR-код не найден')
+        # print('QR-код не найден')
         
     #Отображение
     cv2.imshow("Robot Camera View", img_bgr)    
