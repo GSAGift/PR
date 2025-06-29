@@ -1,5 +1,7 @@
 import numpy as np
 
+
+
 def get_actual_pos_theta_by_id(data, car_id):
     # Получаем позицию тела
     x, y, _ = data.xpos[car_id]
@@ -34,8 +36,11 @@ class PDRegulator:
         self.prev_angle_err = 0
 
     def pd_reg(self, actual_dist, actual_angle, target_dist, target_angle, dt):
-        v = self.Kp_lin * (target_dist - actual_dist) + self.Kd_lin * ((target_dist - actual_dist) - self.prev_dist_err) / dt
+        epsilon = 1*10^-30
+        v = self.Kp_lin * (target_dist - actual_dist) + self.Kd_lin * ((target_dist - actual_dist ) - self.prev_dist_err) / dt
         delta = self.Kp_ang * (target_angle - actual_angle) + self.Kd_ang * ((target_angle - actual_angle) - self.prev_angle_err) / dt
+
+
 
         self.prev_dist_err = target_dist - actual_dist
         self.prev_angle_err = target_angle - actual_angle

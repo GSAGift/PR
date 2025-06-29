@@ -12,7 +12,9 @@ model_pass = "../model/scene.xml"
 # --- Для записи траекторий ---
 car1_positions = []
 car2_positions = []
-desired_positions = []  # <-- Новый список для желаемой траектории
+desired_positions = []
+
+leader_positions_history = []
 
 def control_func(model, data):
     global car1_positions, car2_positions, desired_positions
@@ -30,6 +32,12 @@ def control_func(model, data):
         raise ValueError(f"Car '{body1_name}' not found.")
     else:
         x1, y1, theta1 = get_actual_pos_theta_by_id(data, body1_id)
+        leader_positions_history.append((x1, y1))
+
+        max_history_length = 50
+        if len(leader_positions_history) > max_history_length:
+            leader_positions_history.pop(0)
+
         car1_positions.append((x1, y1))
 
         dist_to_target, angle_target = get_target_pos_theta(target_point_list, x1, y1)
@@ -54,24 +62,42 @@ def control_func(model, data):
         qr_info = get_image_from_camera(data, renderer, camera="car2_front_cam")
 
         if qr_info:
+            # Дистанция и Координата смещения центра QR-кода от центра изображения по оси x
             d, x_c = find_displacement(qr_info)
             f2, a2 = controller2.pd_reg(d, x_c, target_distance, 0, model.opt.timestep)
+            # print(f2, a2)
         else:
-            f2, a2 = controller2.pd_reg(x1 - x2, theta1 - theta2, target_distance, 0, model.opt.timestep)
+            if leader_positions_history:
+                # Берём предыдущую точку из истории (например, 10 шагов назад)
+
+
+                history_index = min(1, len(leader_positions_history) - 1)
+                prev_leader_pos = leader_positions_history[-history_index]
+                print(prev_leader_pos)
+                target_x, target_y = prev_leader_pos
+                dist_to_target = np.hypot(x2 - target_x, y2 - target_y)
+                angle_to_target = np.arctan2(target_y - y2, target_x - x2) - theta2
+                f2, a2 = controller2.pd_reg(dist_to_target, angle_to_target, target_distance, 0, model.opt.timestep)
+            else:
+                # Если нет истории, просто остановись или едь вперёд
+                f2, a2 = 0.0, 0.0
+            # f2, a2 = controller2.pd_reg(np.hypot(x1, y1), theta1, target_distance, 0, model.opt.timestep)
 
     # ------ set control ------
     data.ctrl = [f1, a1, f2, a2]
 
 
 if __name__ == '__main__':
+    target_points = []
     try:
         gen = infinite_trajectory_generator(a=1, b=0.5, center=(0, 0), angular_speed=-0.1)
-        target_point = TargetPoint(gen)
 
-        target_distance = 1
+        target_point = TargetPoint(gen)
+        target_points.append(target_point)
+        target_distance = 0.5
 
         controller1 = PDRegulator(Kp_lin = -0.5, Kd_lin = 0.1, Kp_ang = 0.5, Kd_ang = 0.3)
-        controller2 = PDRegulator(Kp_lin = -1, Kd_lin = 0.1, Kp_ang = .7, Kd_ang = .4)
+        controller2 = PDRegulator(Kp_lin = -0.8, Kd_lin = 0.1, Kp_ang = -0.5, Kd_ang = 0.1)
 
         # Загрузка модели
         model = mujoco.MjModel.from_xml_path(model_pass)
@@ -89,10 +115,6 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"[Ошибка] {e}")
     finally:
-        print("[Debug] Строю график траекторий...")
-        print(f"Car1 точек: {len(car1_positions)}")
-        print(f"Car2 точек: {len(car2_positions)}")
-        print(f"Желаемых точек: {len(desired_positions)}")
 
         if car1_positions or car2_positions or desired_positions:
             plt.figure(figsize=(10, 8))
@@ -118,6 +140,10 @@ if __name__ == '__main__':
             preview_desired = [next(debug_gen) for _ in range(num_preview_points)]
             px, py = zip(*preview_desired)
             plt.plot(px, py, label='Full Desired Ellipse', color='purple', linestyle=':', linewidth=2)
+            """for i in range(len(px)):
+                print(f' Target: {target_points[i].x}, {target_points[i].y}')
+                print(f' Elips: {px[i]}, {py[i]}')"""
+
 
             plt.title("Trajectories of Cars and Desired Path")
             plt.xlabel("X Position")
