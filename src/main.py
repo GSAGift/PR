@@ -148,7 +148,7 @@ if __name__ == '__main__':
                 plt.plot(desired_x, desired_y, label='Desired Trajectory (used)', color='green', linestyle='--',
                          linewidth=2)
 
-            # Опционально: полная желаемая траектория (для сравнения)
+            # полная желаемая траектория (для сравнения)
             num_preview_points = 100
             debug_gen = infinite_trajectory_generator(a=1, b=0.5, center=(0, 0), angular_speed=0.1)
             preview_desired = [next(debug_gen) for _ in range(num_preview_points)]
