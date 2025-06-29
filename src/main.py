@@ -43,8 +43,8 @@ def control_func(model, data):
         dist_to_target, angle_target = get_target_pos_theta(target_point_list, x1, y1)
 
         if dist_to_target < 0.01:
-            target_point_list = target_point.next()
 
+            target_point_list = target_point.next()
         f1, a1 = controller1.pd_reg(np.hypot(x1, y1), theta1, dist_to_target, angle_target, model.opt.timestep)
 
     # ------ Second car ------
@@ -69,8 +69,6 @@ def control_func(model, data):
         else:
             if leader_positions_history:
                 # Берём предыдущую точку из истории (например, 10 шагов назад)
-
-
                 history_index = min(1, len(leader_positions_history) - 1)
                 prev_leader_pos = leader_positions_history[-history_index]
                 print(prev_leader_pos)
@@ -96,7 +94,7 @@ if __name__ == '__main__':
         target_points.append(target_point)
         target_distance = 0.5
 
-        controller1 = PDRegulator(Kp_lin = -0.5, Kd_lin = 0.1, Kp_ang = 0.5, Kd_ang = 0.3)
+        controller1 = PDRegulator(Kp_lin = -0.5, Kd_lin = 0.1, Kp_ang = 1, Kd_ang = 0.5)
         controller2 = PDRegulator(Kp_lin = -0.8, Kd_lin = 0.1, Kp_ang = -0.5, Kd_ang = 0.1)
 
         # Загрузка модели

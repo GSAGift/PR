@@ -45,36 +45,6 @@ def infinite_trajectory_generator(a=1.0, b=1.0, center=(0.0, 0.0), angular_speed
             theta -= 2 * np.pi
 
 
-def infinite_sin_trajectory_generator(amplitude=1.0, frequency=1.0, speed=0.1,
-                                  offset=0.0, phase=0.0, direction='x'):
-    """
-    Бесконечный генератор точек по синусоидальной траектории.
-
-    Параметры:
-    amplitude (float): Амплитуда синусоиды
-    frequency (float): Частота (количество волн на единицу длины)
-    speed (float): Скорость движения вдоль основной оси (рад/шаг)
-    offset (float): Вертикальный сдвиг графика
-    phase (float): Начальная фаза синусоиды
-    direction (str): 'x' — синусоида вдоль оси X, 'y' — вдоль Y
-
-    Yields:
-    tuple: (x, y) — координаты следующей точки траектории
-    """
-    t = 0.0  # параметр, который будет расти со временем
-    while True:
-        if direction == 'x':
-            x = t
-            y = amplitude * np.sin(frequency * t + phase) + offset
-        elif direction == 'y':
-            y = t
-            x = amplitude * np.sin(frequency * y + phase) + offset
-        else:
-            raise ValueError("direction должен быть 'x' или 'y'")
-
-        yield x, y
-        t += speed
-
 class TargetPoint:
     def __init__(self, gen):
         self.x = 0
