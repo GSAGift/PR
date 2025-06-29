@@ -1,11 +1,6 @@
 import math
-import mujoco
 import cv2
-import time
 from pyzbar.pyzbar import decode
-import cv2 as cv
-
-from qr_detect_and_scan import QR_handler
 
 def get_image_from_camera(data, renderer, camera):
     # Обновление и рендеринг камеры
@@ -13,15 +8,13 @@ def get_image_from_camera(data, renderer, camera):
     img = renderer.render()
 
     img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    # print(img_bgr.shape)
     qr_info = decode(img_bgr)
     
     if qr_info:
         qr_data = qr_info[0].data.decode('utf-8')  # или 'utf-8', если текст
         print(f'Считанное значение QR: {qr_data}')
     else:
-        qr_text = None
-        # print('QR-код не найден')
+        print(f'QR-код не найден')
         
     #Отображение
     cv2.imshow("Robot Camera View", img_bgr)    
@@ -33,7 +26,6 @@ def get_image_from_camera(data, renderer, camera):
     
 
 def find_displacement(qr_info):
-    
     # Ширина QR-кода на ИЗОБРАЖЕНИИ
     width = qr_info[0].rect.width
     
@@ -42,7 +34,6 @@ def find_displacement(qr_info):
     # Подсчитанное расстояние от камеры до QR-кода
     d = (8 * f)/width 
     
-
     # Координата центра ИЗОБРАЖЕНИЯ
     x_centered = 118
     

@@ -34,7 +34,6 @@
     <camera name="front_cam" mode="fixed" pos="0.1 0 0.1" euler="0 -50 270" fovy="120"/>   
 
       <freejoint/>
-      <!-- <light name="top light" pos="0 0 2" mode="trackcom" diffuse=".4 .4 .4"/> -->
       <geom name="chasis" type="mesh" mesh="chasis"/>
       <geom name="qr_code_geom" type="box" size=".02 .02 .001" pos="-.11 0 .01" material="qr_material" euler="0 90 0"/>
       <geom name="front wheel" pos=".08 0 -.015" type="sphere" size=".015" condim="1" priority="1"/>
@@ -59,8 +58,6 @@
     <site name="sensor_left"  pos="0 0.07 0.02" size="0.005" rgba="0 1 0 1"/>
     <site name="sensor_right" pos="0 -0.07 0.02" size="0.005" rgba="0 0 1 1"/>
 
-
-
     </body>
   </worldbody>
 
@@ -79,8 +76,6 @@
     <motor name="forward" tendon="forward" ctrlrange="-1 1"/>
     <motor name="turn" tendon="turn" ctrlrange="-1 1"/>
   </actuator>
-
-
 
   <sensor>
     <!-- Датчики нагрузки на двигатели -->

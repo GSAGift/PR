@@ -20,8 +20,6 @@ def get_target_pos_theta(target_point, x, y):
     dist_to_target = np.hypot(dx, dy)
     angle_target = np.arctan2(dy, dx)
 
-    # print("x, y, target_point[0], target_point[1], dist_to_target, angle_target", x, y, target_point[0], target_point[1], dist_to_target, angle_target)
-
     return dist_to_target, angle_target
 
 class PDRegulator:
@@ -52,5 +50,4 @@ class PDRegulator:
         self.prev_angle_err = angle_error
 
         return v, delta
-        # return 0, 0
     
